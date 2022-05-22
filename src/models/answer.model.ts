@@ -1,6 +1,6 @@
 import {model, Schema} from "mongoose";
 
-interface IAnswer {
+export interface IAnswer {
     content: string;
     user: string; // email of the user
     approved: boolean; // only teacher can approve

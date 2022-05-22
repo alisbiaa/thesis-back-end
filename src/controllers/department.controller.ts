@@ -1,37 +1,54 @@
 import {RequestHandler} from "express";
 import {department_model, IDepartment} from "../models/department.model";
-import {teacher_model} from "../models/teacher.model";
+import {user_model} from "../models/user.model";
 
 // Create department
 export const create: RequestHandler = (req, res) => {
-    const {name,head_department,description}: IDepartment = req.body;
-    teacher_model.findOne({email: head_department})
-        .then(data => {
-            if (data) { // if teacher exist
-                department_model.create({name, head_department,description})
-                    .then(data =>
-                        res.status(200).send({
-                            data, status: 200, success: true, message: "Department created successfully!",
-                        })
-                    )
-                    .catch(error => // Wrong input
-                        res.status(400).send({
-                            error, status: 400, success: false, message: "Could not create department!",
-                        })
-                    );
-            }
-            // Teacher doesn't exist
-            else {
-                res.status(404).send({
-                    status: 404, success: false, message: "Teacher doesn't exist!",
-                });
-            }
-        })
-        .catch(error => {
-            res.status(500).send({
-                error, status: 500, success: false, message: "Internal Server Error!"
-            })
+    const {name,description}: IDepartment = req.body;
+    try {
+        department_model.create({name,description})
+                        .then(data =>
+                            res.status(200).send({
+                                data, status: 200, success: true, message: "Department created successfully!",
+                            })
+                        )
+                        .catch(error => // Wrong input
+                            res.status(400).send({
+                                error, status: 400, success: false, message: "Could not create department!",
+                            })
+                        );
+    } catch (error) {
+        res.status(500).send({
+            error, status: 500, success: false, message: "Internal Server Error!"
         });
+    }
+    // teacher_model.findOne({email: head_department})
+    //     .then(data => {
+    //         if (data) { // if teacher exist
+    //             department_model.create({name, head_department,description})
+    //                 .then(data =>
+    //                     res.status(200).send({
+    //                         data, status: 200, success: true, message: "Department created successfully!",
+    //                     })
+    //                 )
+    //                 .catch(error => // Wrong input
+    //                     res.status(400).send({
+    //                         error, status: 400, success: false, message: "Could not create department!",
+    //                     })
+    //                 );
+    //         }
+    //         // Teacher doesn't exist
+    //         else {
+    //             res.status(404).send({
+    //                 status: 404, success: false, message: "Teacher doesn't exist!",
+    //             });
+    //         }
+    //     })
+    //     .catch(error => {
+    //         res.status(500).send({
+    //             error, status: 500, success: false, message: "Internal Server Error!"
+    //         })
+    //     });
 };
 
 // Remove department
@@ -95,7 +112,7 @@ export const get_one: RequestHandler = (req, res) => {
 export const update: RequestHandler = async (req, res) => {
     const {id} = req.params;
     const {head_department,description} = req.body;
-    teacher_model.findOne({email: head_department})
+    user_model.findOne({email: head_department})
         .then(data => {
             if (data) { // if teacher exist
                 department_model.findByIdAndUpdate(id, {head_department,description}, {useFindAndModify: false})

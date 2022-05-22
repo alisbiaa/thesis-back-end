@@ -6,6 +6,7 @@ export interface IQuestion {
 
     solved: boolean;
     hidden: boolean;
+    important: boolean;
 
     department_id: string;
     subject_id: string;
@@ -16,6 +17,7 @@ const schema = new Schema<IQuestion>({
     user: {type: String, required: true},
     solved: {type: Boolean, default: false},
     hidden: {type: Boolean, default: false},
+    important: {type: Boolean, default: false},
     department_id: {type: String, required: true},
     subject_id: {type: String, required: true},
 }, {timestamps: true, autoIndex: true});

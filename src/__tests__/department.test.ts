@@ -3,10 +3,10 @@ import app from "../utils/app";
 import {clear, connect, close} from "./config/database";
 import {Types} from "mongoose";
 import {department_model, IDepartment} from "../models/department.model";
-import {ITeacher, teacher_model} from "../models/teacher.model";
+import {IUser, user_model} from "../models/user.model";
 
-const mock_teacher: ITeacher = {
-    department_id: null, subject_id: null,
+const mock_teacher: IUser = {
+    department_id: null,
     name: "Ali",
     bio: "Random Bio",
     email: "alisbiaazayen@gmail.com",
@@ -37,7 +37,7 @@ describe('Department',  () =>{
         })
         describe('given the department exist' , () => {
             it('should return 200', async () => {
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 const temp_depart = await department_model.create(mock_department);
                 const {statusCode} = await supertest(app).get(`/api/department/${temp_depart._id}`);
                 expect(statusCode).toBe(200);
@@ -54,7 +54,7 @@ describe('Department',  () =>{
         })
         describe('given the database is not empty' , () => {
             it('should return 200', async () => {
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 await department_model.create(mock_department);
                 const {statusCode,body} = await supertest(app).get(`/api/department`);
                 expect(statusCode).toBe(200);
@@ -66,7 +66,7 @@ describe('Department',  () =>{
     describe('/create', () => {
         describe('given a correct input' , () => {
             it('should return 200', async () => {
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 const {statusCode} = await supertest(app)
                     .post(`/api/department`)
                     .send(mock_department);
@@ -75,7 +75,7 @@ describe('Department',  () =>{
         })
         describe('given a wrong input' , () => {
             it('should return 400', async () => {
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 const {statusCode} = await supertest(app)
                     .post(`/api/department`)
                     .send({head_department: "alisbiaazayen@gmail.com"});
@@ -95,7 +95,7 @@ describe('Department',  () =>{
     describe('/delete /:id', () => {
         describe('given the department exist' , () => {
             it('should return 200', async () => {
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 const temp_depart = await department_model.create(mock_department);
                 const {statusCode} = await supertest(app).delete(`/api/department/${temp_depart._id}`);
                 expect(statusCode).toBe(200);
@@ -123,7 +123,7 @@ describe('Department',  () =>{
         })
         describe('given the department doesnt exist' , () => {
             it('should return 404', async () => {
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 const id = Types.ObjectId().toString(); // generating a random string
                 const {statusCode} = await supertest(app)
                     .put(`/api/department/${id}`)
@@ -134,9 +134,13 @@ describe('Department',  () =>{
         describe('given the input is correct' , () => {
             it('should return 200', async () => {
                 // create a user to avoid the 404 status error
-                await teacher_model.create(mock_teacher);
+                await user_model.create(mock_teacher);
                 // create the model we want to update
-                const temp_depart = await department_model.create({name: "New department name", head_department:"wronguser"});
+                const temp_depart = await department_model.create({
+                    name: "New department name",
+                    head_department:"wronguser",
+                    description: "This temp description"
+                });
                 const {statusCode} = await supertest(app)
                     .put(`/api/department/${temp_depart._id}`)
                     .send({head_department: mock_teacher.email});

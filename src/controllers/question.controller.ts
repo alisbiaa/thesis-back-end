@@ -37,6 +37,7 @@ export const create: RequestHandler = (req, res) => {
 }
 
 export const get_all : RequestHandler = (req, res) => {
+
     question_model.find({})
         .then(data => {
             const status = data.length ? 200 : 404;
@@ -82,6 +83,25 @@ export const remove : RequestHandler = (req, res) => {
             res.status(status).send({
                 data, status, success: !!data, message: data ? "Question deleted" : "Question doesn't exist."
             });
+        })
+        .catch(error =>
+            res.status(500).send({
+                error, status: 500, success: false, message: "Server side error!",
+            })
+        );
+}
+
+export const get_all_by_subject : RequestHandler = (req, res) => {
+    const subject_id = req.params.id;
+    question_model.find({subject_id})
+        .then(data => {
+            const status = data.length ? 200 : 404;
+            res.status(status).send({
+                data,
+                status,
+                success: !!data.length,
+                message: data.length ? "All questions!" : "Database empty...",
+            })
         })
         .catch(error =>
             res.status(500).send({
